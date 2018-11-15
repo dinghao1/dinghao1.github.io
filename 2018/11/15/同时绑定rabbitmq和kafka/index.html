@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Hexo</title>
+  <title>同时绑定rabbitmq和kafka | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="spring-cloud同时绑定rabbitmq和kafka两个消息中间件其实rabbitmq和kafka可以一键切换的，现在要做的是同时绑定两个加入依赖     org.springframework.cloud    spring-cloud-stream-binder-kafka     org.springframework.cloud    spring-cloud-starter-st">
+<meta name="keywords" content="随笔">
+<meta property="og:type" content="article">
+<meta property="og:title" content="同时绑定rabbitmq和kafka">
+<meta property="og:url" content="http://yoursite.com/2018/11/15/同时绑定rabbitmq和kafka/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="spring-cloud同时绑定rabbitmq和kafka两个消息中间件其实rabbitmq和kafka可以一键切换的，现在要做的是同时绑定两个加入依赖     org.springframework.cloud    spring-cloud-stream-binder-kafka     org.springframework.cloud    spring-cloud-starter-st">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-15T03:22:03.714Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="同时绑定rabbitmq和kafka">
+<meta name="twitter:description" content="spring-cloud同时绑定rabbitmq和kafka两个消息中间件其实rabbitmq和kafka可以一键切换的，现在要做的是同时绑定两个加入依赖     org.springframework.cloud    spring-cloud-stream-binder-kafka     org.springframework.cloud    spring-cloud-starter-st">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -150,36 +155,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-同时绑定rabbitmq和kafka" class="article article-type-post " itemscope="" itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/15/同时绑定rabbitmq和kafka/" class="archive-article-date">
-  	<time datetime="2018-11-15T03:18:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-15</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/15/同时绑定rabbitmq和kafka/">同时绑定rabbitmq和kafka</a>
+    <h1 class="article-title" itemprop="name">
+      同时绑定rabbitmq和kafka
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/11/15/同时绑定rabbitmq和kafka/" class="archive-article-date">
+  	<time datetime="2018-11-15T03:18:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>spring-cloud同时绑定rabbitmq和kafka两个消息中间件<br>其实rabbitmq和kafka可以一键切换的，现在要做的是同时绑定两个<br>加入依赖<br><!-- kafka支持 --></p>
+<p><dependency><br>    <groupid>org.springframework.cloud</groupid><br>    <artifactid>spring-cloud-stream-binder-kafka</artifactid><br></dependency><br><!-- rabbitmq的支持 --></p>
+<p><dependency><br>    <groupid>org.springframework.cloud</groupid><br>    <artifactid>spring-cloud-starter-stream-rabbit</artifactid><br></dependency><br>yml配置<br>server:<br>  port: 11002<br>spring:<br>  application:<br>    name: jp-ESB-Car-bus<br>  rabbitmq: #rabbitmq配置,consul健康检查需要<br>    addresses: dev.rabbitmq:31700<br>    username: all_hczz<br>    password: all_hczz<br>    virtual-host: all_hczz<br>  cloud:<br>    consul: #consul配置<br>      host: dev.consul<br>      port: 80<br>      discovery:<br>        preferIpAddress: true<br>        port: ${server.port}<br>        healthCheckPath: /health<br>        healthCheckInterval: 15s<br>        instanceId: ${spring.application.name}:${spring.cloud.consul.discovery.hostname}:${server.port}<br>        query-passing: true<br>    stream:<br>      default-binder: rabbit #设置默认的绑定通道<br>      bindings: #绑定通道<br>        kafka_event:<br>          content-type: text/plain<br>          group: all_hczz<br>          binder: kafka<br>        rabbitmq_event:<br>          content-type: application/json<br>          binder: rabbit<br>      binders:<br>        kafka: #定义Kafka通道<br>          type: kafka<br>          environment:<br>            spring:<br>              cloud:<br>                stream:<br>                  kafka:<br>                    binder:<br>                      brokers: test.peer4:9092,test.peer5:9092,test.peer6:9092<br>                      zkNodes: test.peer4:2181,test.peer5:2181,test.peer6:2181<br>        rabbit: #定义Kafka通道<br>          type: rabbit<br>          environment:<br>            spring:<br>              rabbitmq:<br>                addresses: ${spring.rabbitmq.addresses}<br>                username: ${spring.rabbitmq.username}<br>                password: ${spring.rabbitmq.password}<br>                virtual-host: ${spring.rabbitmq.virtual-host}<br>  sleuth: #定义sleuth收集比例<br>    sampler:<br>      percentage: 1.0<br>  jackson:<br>    mapper:<br>      accept-case-insensitive-properties: true<br>msConfig:<br>  swagger2:<br>    config:<br>      basePackage: com.jp.integration.controller<br>    apiInfo:<br>      title: XXXX<br>      description: XXXXX<br>      version: 1.0<br>      contact: XXXXXXX<br>      url: XXXXX.XXX.XXX<br>      email: XXXXXXX</p>
+<a id="more"></a>
+<p>消费者<br>绑定消费者通道<br>public interface ReceiveMessageEvent {<br>​<br>    String KAFKA_EVENT = “kafka_event”;<br>​<br>    String RABBITMQ_EVENT = “rabbitmq_event”;<br>​<br>    @Input(ReceiveMessageEvent.KAFKA_EVENT)<br>    SubscribableChannel receiveKafka();<br>​<br>    @Input(ReceiveMessageEvent.RABBITMQ_EVENT)<br>    SubscribableChannel receiveRabbitmq();<br>​<br>}<br>​<br>@EnableBinding(value = { ReceiveMessageEvent.class })<br>public class ReceiveMessageServiceImpl {<br>​<br>    private static final Logger logger = LoggerFactory.getLogger(ReceiveMessageServiceImpl.class);<br>​<br>    @StreamListener(ReceiveMessageEvent.KAFKA_EVENT)<br>    public void receiveMessage(String message) {<br>        logger.info(“Kafka消息接收===========&gt;” + message);<br>    }<br>​<br>    @StreamListener(ReceiveMessageEvent.RABBITMQ_EVENT)<br>    public void rabbitmqEvent(String message) {<br>        logger.info(“rabbitmq消息接收===========&gt;” + message);<br>    }<br>​<br>}<br>生产者<br>绑定生产者通道<br>public interface SendMessageEvent {<br>​<br>    String RABBITMQ_EVENT = “rabbitmq_event”;<br>​<br>    String KAFKA_EVENT = “kafka_event”;<br>​<br>    @Output(SendMessageEvent.RABBITMQ_EVENT)<br>    MessageChannel sendRabbitmq();<br>​<br>    @Output(SendMessageEvent.KAFKA_EVENT)<br>    MessageChannel sendKafka();<br>​<br>}<br>​<br>@EnableBinding(value = { SendMessageEvent.class })<br>public class SendMessageServiceImpl {<br>​<br>    private static final Logger logger = LoggerFactory.getLogger(SendMessageServiceImpl.class);<br>​<br>    @Autowired<br>    private SendMessageEvent sendMessageEvent;<br>​<br>    public void sendKafka(String msg) {<br>        sendMessageEvent.sendKafka().send(MessageBuilder.withPayload(msg).build());<br>        logger.info(“Kafka消息发送===========&gt;” + msg);<br>    }<br>​<br>    public void sendRabbitMQ(String msg) {<br>        sendMessageEvent.sendRabbitmq().send(MessageBuilder.withPayload(msg).build());<br>        logger.info(“RabbitMQ消息发送===========&gt;” + msg);<br>    }<br>​<br>}</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,46 +220,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/15/同时绑定rabbitmq和kafka/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/15/hello-world/" class="archive-article-date">
-  	<time datetime="2018-11-15T01:47:11.414Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-15</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/15/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello World</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/15/hello-world/">Hello World</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -253,8 +342,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
